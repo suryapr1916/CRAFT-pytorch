@@ -9,13 +9,14 @@ import os
 import time
 import argparse
 
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+
 import torch
 import torch.nn as nn
 import torch.backends.cudnn as cudnn
 from torch.autograd import Variable
 
 from PIL import Image
-
 import cv2
 from skimage import io
 import numpy as np
@@ -26,6 +27,10 @@ import json
 import zipfile
 
 from craft import CRAFT
+
+## ! sys dependent import
+sys.path.append(r'C:\Users\surya\Codes\repos\text_detection')
+from config import *
 
 from collections import OrderedDict
 def copyStateDict(state_dict):
@@ -62,7 +67,7 @@ args = parser.parse_args()
 """ For test images in a folder """
 image_list, _, _ = file_utils.get_files(args.test_folder)
 
-result_folder = './result/'
+result_folder = RES_DIR
 if not os.path.isdir(result_folder):
     os.mkdir(result_folder)
 
@@ -117,8 +122,6 @@ def test_net(net, image, text_threshold, link_threshold, low_text, cuda, poly, r
 
     return boxes, polys, ret_score_text
 
-
-
 if __name__ == '__main__':
     # load net
     net = CRAFT()     # initialize
@@ -163,8 +166,8 @@ if __name__ == '__main__':
 
         # save score text
         filename, file_ext = os.path.splitext(os.path.basename(image_path))
-        mask_file = result_folder + "/res_" + filename + '_mask.jpg'
-        cv2.imwrite(mask_file, score_text)
+        # mask_file = result_folder + "/res_" + filename + '_mask.jpg'
+        # cv2.imwrite(mask_file, score_text)
 
         file_utils.saveResult(image_path, image[:,:,::-1], polys, dirname=result_folder)
 
